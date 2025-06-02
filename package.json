@@ -9,9 +9,10 @@
     "start": "next start",
     "lint": "next lint",
     "generate:types": "payload generate:types --tsconfig tsconfig.payload.json",
-    "db:fresh":"payload migrate:fresh"
+    "db:fresh": "payload migrate:fresh",
+    "db:seed": "bun run src/seed.ts"
   },
-  "dependencies": { 
+  "dependencies": {
     "@hookform/resolvers": "^5.0.1",
     "@payloadcms/db-mongodb": "^3.40.0",
     "@payloadcms/next": "^3.40.0",

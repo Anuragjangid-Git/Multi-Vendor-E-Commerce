@@ -1,9 +1,10 @@
-import { CategoriesSelect } from "@/payload-types";
+import { Category } from "@/payload-types";
 import { footer as Footer } from "./footer";
 import { Navbar } from "./navbar";
 import { SearchFilter } from "./search-filter";
 import configPromise from "@payload-config";
 import { getPayload } from "payload";
+import { CustomCategory } from "./types";
 interface prop {
   children: React.ReactNode;
 }
@@ -20,13 +21,14 @@ const Layout = async ({ children }: prop) => {
         exists: false,
       },
     },
+    sort: "name",
   });
 
-  const formattedData = data.docs.map((doc) => ({
+  const formattedData: CustomCategory[] = data.docs.map((doc) => ({
     ...doc,
     subcategories: (doc.subcategories?.docs ?? []).map((doc) => ({
-      ...(doc as CategoriesSelect),
-      subcategories:undefined,
+      ...(doc as Category),
+      subcategories: undefined,
     })),
   }));
 
