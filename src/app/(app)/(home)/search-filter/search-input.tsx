@@ -8,14 +8,13 @@ import { Button } from "@/components/ui/button";
 
 interface props{
     disable?:boolean;
-    data:CustomCategory[];
 }
 
-export const SearchInput = ({disable,data}:props)=>{
+export const SearchInput = ({disable}:props)=>{
     const [isSidebarOpen,setIsSidebarOpen] = useState(false);
 return(
     <div className="w-full flex items-center gap-2">
-        <CategorySidebar data={data} open={isSidebarOpen} onOpenChange={setIsSidebarOpen} />
+        <CategorySidebar open={isSidebarOpen} onOpenChange={setIsSidebarOpen} />
         <div className="relative w-full">
         <SearchIcon className="absolute top-1/2 left-3 -translate-y-1/2 size-4 text-neutral-500"/>
         <Input className="pl-8" placeholder="Search products" disabled={disable}/>

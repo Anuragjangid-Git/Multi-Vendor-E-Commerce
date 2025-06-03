@@ -1,4 +1,3 @@
-import { CustomCategory } from "../types";
 import {
   Sheet,
   SheetContent,
@@ -9,30 +8,42 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-
+import { useTRPC } from "@/trpc/client";
+import { useQuery } from "@tanstack/react-query";
+import { CategoriesGetManyOutput } from "@/modules/categories/types";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  data: CustomCategory[];
 }
 
-export const CategorySidebar = ({ open, onOpenChange, data }: Props) => {
+export const CategorySidebar = ({ open, onOpenChange }: Props) => {
+  function normalizeCategory(category: any): any {
+    return {
+      ...category,
+      subcategories: (category.subcategories ?? []).map(normalizeCategory),
+    };
+  }
+  const trpc = useTRPC();
+  const { data: rawData } = useQuery(trpc.categories.getMany.queryOptions());
+  const data = rawData?.map(normalizeCategory);
+
   const router = useRouter();
-  const [parentCategory, setParentCategory] = useState<CustomCategory[] | null>(
-    null
-  );
-  const [selectedCategory, setselectedCategory] =
-    useState<CustomCategory | null>(null);
+  const [parentCategory, setParentCategory] = useState<
+    CategoriesGetManyOutput[number]["subcategories"] | null
+  >(null);
+  const [selectedCategory, setselectedCategory] = useState<
+    CategoriesGetManyOutput[1] | null
+  >(null);
   const currentCategory = parentCategory ?? data ?? [];
   const handleOpenChange = (open: boolean) => {
     setParentCategory(null);
     setselectedCategory(null);
     onOpenChange(open);
   };
-  const handleCategoryClick = (category: CustomCategory) => {
+  const handleCategoryClick = (category: CategoriesGetManyOutput[1]) => {
     if (category.subcategories && category.subcategories.length > 0) {
-      setParentCategory(category.subcategories as CustomCategory[]);
+      setParentCategory(category.subcategories ?? null);
       setselectedCategory(category);
     } else {
       if (parentCategory && selectedCategory) {
@@ -47,19 +58,19 @@ export const CategorySidebar = ({ open, onOpenChange, data }: Props) => {
       handleOpenChange(false);
     }
   };
-  const handleBackClick = ()=>{
-    if(parentCategory){
-        setParentCategory(null);
-        setselectedCategory(null);
+  const handleBackClick = () => {
+    if (parentCategory) {
+      setParentCategory(null);
+      setselectedCategory(null);
     }
-  }
-  const backgroundColor = selectedCategory?.color || 'white';
+  };
+  const backgroundColor = selectedCategory?.color || "white";
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent
         className="p-0 transition-0"
         style={{
-           backgroundColor
+          backgroundColor,
         }}
         side="left"
       >
