@@ -15,10 +15,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import z from "zod";
-import { loginSchema} from "../../schemas";
+import { loginSchema } from "../../schemas";
 import Link from "next/link";
 import { useTRPC } from "@/trpc/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 const poppins = Poppins({
@@ -28,14 +28,18 @@ const poppins = Poppins({
 export const SignInView = () => {
   const router = useRouter();
   const trpc = useTRPC();
+  const querryClient = useQueryClient();
+
   const login = useMutation(
     trpc.auth.login.mutationOptions({
       onError: (error) => toast.error(error.message),
-      onSuccess: () => {
+      onSuccess: async () => {
+        await querryClient.invalidateQueries(trpc.auth.session.queryFilter());
         router.push("/");
       },
     })
   );
+
   const form = useForm<z.infer<typeof loginSchema>>({
     mode: "all",
     resolver: zodResolver(loginSchema),
@@ -74,10 +78,8 @@ export const SignInView = () => {
                 </Link>
               </Button>
             </div>
-            <h1 className="text-4xl font-medium">
-              Welcom back to My Shop.
-            </h1>
-           
+            <h1 className="text-4xl font-medium">Welcom back to My Shop.</h1>
+
             <FormField
               name="email"
               render={({ field }) => (

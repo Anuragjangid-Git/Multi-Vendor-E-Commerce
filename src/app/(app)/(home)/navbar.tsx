@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import { NavbarSidebar } from "./navbar-sidebar";
 import { useState } from "react";
-import {  MenuIcon } from "lucide-react";
+import { MenuIcon } from "lucide-react";
+import { useTRPC } from "@/trpc/client";
+import { useQuery } from "@tanstack/react-query";
 
 interface navbarItemsProp {
   href: string;
@@ -45,7 +47,9 @@ const navbarItems = [
 
 export const Navbar = () => {
   const pathname = usePathname();
-  const [isSidebarOpen,setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const trpc = useTRPC();
+  const session = useQuery(trpc.auth.session.queryOptions());
   return (
     <nav className="h-20 bg-white flex justify-between border-b font-medium">
       <Link className="pl-6 flex items-center" href="/">
@@ -53,7 +57,11 @@ export const Navbar = () => {
           My Shop
         </span>
       </Link>
-        <NavbarSidebar open={isSidebarOpen} onOpenChange={setIsSidebarOpen} items={navbarItems}/>
+      <NavbarSidebar
+        open={isSidebarOpen}
+        onOpenChange={setIsSidebarOpen}
+        items={navbarItems}
+      />
       <div className="items-center gap-4 lg:flex hidden">
         {navbarItems.map((item) => (
           <NavbarItems
@@ -65,24 +73,43 @@ export const Navbar = () => {
           </NavbarItems>
         ))}
       </div>
-      <div className="lg:flex hidden">
-        <Button
-          asChild
-          variant={"secondary"}
-          className="bg-white border-l border-r-0 border-t-0 border-b-0 hover:bg-pink-400 px-12 h-full rounded-none transition-colors text-lg"
-        >
-          <Link prefetch href={"sign-in"}>Login</Link>
-        </Button>
-        <Button
-          asChild
-          className="bg-black text-white border-l border-r-0 border-t-0 border-b-0 hover:bg-pink-400 hover:text-black px-12 h-full rounded-none transition-colors text-lg"
-        >
-          <Link prefetch href={"sign-up"}>Start Selling</Link>
-        </Button>
-      </div>
+      {session.data?.user ? (
+        <div className="lg:flex hidden">
+          <Button
+            asChild
+            className="bg-black text-white border-l border-r-0 border-t-0 border-b-0 hover:bg-pink-400 hover:text-black px-12 h-full rounded-none transition-colors text-lg"
+          >
+            <Link href={"/admin"}>Dashboard</Link>
+          </Button>
+        </div>
+      ) : (
+        <div className="lg:flex hidden">
+          <Button
+            asChild
+            variant={"secondary"}
+            className="bg-white border-l border-r-0 border-t-0 border-b-0 hover:bg-pink-400 px-12 h-full rounded-none transition-colors text-lg"
+          >
+            <Link prefetch href={"/sign-in"}>
+              Login
+            </Link>
+          </Button>
+          <Button
+            asChild
+            className="bg-black text-white border-l border-r-0 border-t-0 border-b-0 hover:bg-pink-400 hover:text-black px-12 h-full rounded-none transition-colors text-lg"
+          >
+            <Link prefetch href={"/sign-up"}>
+              Start Selling
+            </Link>
+          </Button>
+        </div>
+      )}
       <div className="flex lg:hidden justify-center items-center">
-        <Button variant={"ghost"} className="size-12 border-transparent bg-white" onClick={()=>setIsSidebarOpen(true)}>
-            <MenuIcon/>
+        <Button
+          variant={"ghost"}
+          className="size-12 border-transparent bg-white"
+          onClick={() => setIsSidebarOpen(true)}
+        >
+          <MenuIcon />
         </Button>
       </div>
     </nav>
