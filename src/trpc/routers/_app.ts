@@ -1,6 +1,8 @@
-import { categoriesRouter } from "@/modules/categories/server/procuders";
+import { categoriesRouter } from "@/modules/categories/server/proceduers";
 import { createTRPCRouter } from "../init";
+import { authRouter } from "@/modules/auth/server/procedures";
 export const appRouter = createTRPCRouter({
+  auth:authRouter,
   categories: categoriesRouter,
 });
 // export type definition of API

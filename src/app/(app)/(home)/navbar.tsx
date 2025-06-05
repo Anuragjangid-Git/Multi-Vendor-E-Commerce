@@ -50,7 +50,7 @@ export const Navbar = () => {
     <nav className="h-20 bg-white flex justify-between border-b font-medium">
       <Link className="pl-6 flex items-center" href="/">
         <span className={cn("text-5xl font-semibold", poppins.className)}>
-          M
+          My Shop
         </span>
       </Link>
         <NavbarSidebar open={isSidebarOpen} onOpenChange={setIsSidebarOpen} items={navbarItems}/>
@@ -71,13 +71,13 @@ export const Navbar = () => {
           variant={"secondary"}
           className="bg-white border-l border-r-0 border-t-0 border-b-0 hover:bg-pink-400 px-12 h-full rounded-none transition-colors text-lg"
         >
-          <Link href={"sign-in"}>Login</Link>
+          <Link prefetch href={"sign-in"}>Login</Link>
         </Button>
         <Button
           asChild
           className="bg-black text-white border-l border-r-0 border-t-0 border-b-0 hover:bg-pink-400 hover:text-black px-12 h-full rounded-none transition-colors text-lg"
         >
-          <Link href={"sign-up"}>Start Selling</Link>
+          <Link prefetch href={"sign-up"}>Start Selling</Link>
         </Button>
       </div>
       <div className="flex lg:hidden justify-center items-center">
